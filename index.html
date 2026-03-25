@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Für Angelo - Zentralist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --svz-blue: #ffffff;
+            --accent-yellow: #ffcc00;
+            --mario-sky: #5c94fc;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'Poppins', sans-serif; overflow: hidden;
+            background: var(--bg-gradient);
+            transition: transform 1.5s ease-in-out, background 1s;
+            color: white;
+        }
+
+        #particles-js { position: absolute; width: 100%; height: 100%; z-index: 1; }
+
+        .scene {
+            display: none; width: 100vw; height: 100vh;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; position: absolute; z-index: 10;
+            opacity: 0; transition: opacity 0.8s ease;
+            padding: 20px; box-sizing: border-box;
+        }
+
+        .active-scene { display: flex; opacity: 1; }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px);
+            border-radius: 20px; padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2); max-width: 600px;
+        }
+
+        h1 { color: var(--accent-yellow); text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        p { font-size: 1.1rem; line-height: 1.6; color: #e0e0e0; }
+
+        .btn-action {
+            padding: 15px 40px; font-size: 1.2rem; background: var(--accent-yellow);
+            color: #1e3c72; border: none; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; transition: 0.3s; margin-top: 20px;
+        }
+        .btn-action:hover { transform: scale(1.05); background: #fff; }
+
+        /* Bahn-Animation */
+        #train-emoji { font-size: 6rem; position: absolute; transition: transform 3s ease-in, opacity 2s; z-index: 12; }
+        .train-zoom { transform: scale(0); opacity: 0; }
+
+        /* Timer */
+        .timer-circle {
+            width: 80px; height: 80px; border-radius: 50%; border: 5px solid var(--accent-yellow);
+            display: flex; justify-content: center; align-items: center; font-size: 2.5rem;
+            font-weight: bold; color: var(--accent-yellow); margin: 30px auto;
+        }
+
+        /* Matrix */
+        #matrix-canvas { position: absolute; top: 0; left: 0; display: none; z-index: 5; }
+        .matrix-word { font-family: monospace; font-size: 4rem; color: #0f0; text-shadow: 0 0 10px #0f0; opacity: 0; transition: 2s; z-index: 11; }
+
+        /* Mario */
+        #mario-canvas { background: var(--mario-sky); border: 4px solid #000; image-rendering: pixelated; }
+        .pixel-text { font-family: 'Press Start 2P', cursive; font-size: 12px; color: white; text-shadow: 2px 2px #000; }
+
+        /* Final */
+        #scene-7 { background: #000; }
+        .zoom-box {
+            width: 5px; height: 5px; background: var(--accent-yellow); color: #000;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 900; transition: all 4s cubic-bezier(0.1, 0, 0.9, 1);
+        }
+        .zoom-active { width: 100vw; height: 100vh; font-size: 6rem; border-radius: 0; }
+
+        .rotate-180 { transform: rotate(180deg); }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <div id="scene-1" class="scene active-scene">
+        <div class="glass-card">
+            <h1>Moin Angelo! 🎧</h1>
+            <p>Zentrale an Angelo: System-Check läuft...<br>Bereit für die Übertragung?</p>
+            <button class="btn-action" onclick="startJourney()">System starten 🚀</button>
+        </div>
+    </div>
+
+    <div id="scene-2" class="scene">
+        <div id="train-emoji">🚄💨</div>
+    </div>
+
+    <div id="scene-3" class="scene">
+        <div class="glass-card">
+            <h2>Für den besten Zentralisten</h2>
+            <p>"In der Zentrale, da hältst du die Wacht,<br>hast alles im Blick, bei Tag und bei Nacht.<br>Mit Ruhe und Fokus, das ist dein Revier,<br>Angelo, wir danken dir!"</p>
+            <div class="timer-circle" id="countdown">10</div>
+        </div>
+    </div>
+
+    <canvas id="matrix-canvas"></canvas>
+    <div id="scene-4" class="scene">
+        <h2 id="motivation-text" class="matrix-word">MOTIVATION</h2>
+    </div>
+
+    <div id="scene-5" class="scene">
+        <div class="glass-card">
+            <h2 style="font-size: 4rem; color: var(--accent-yellow); margin: 0;">SVZ</h2>
+            <p style="font-style: italic; margin-top:20px;">
+                "Die Zentrale ist das Herz, doch das REMO ist der Puls. 
+                In einer Welt voller Signale ist das SVZ der Ort, an dem wir das Rauschen ausblenden und uns auf das Wesentliche konzentrieren: Echte Verbindung. 
+                Angelo, im REMO schalten wir die Monitore aus und die Gemeinschaft an."
+            </p>
+            <button class="btn-action" onclick="goToMario()">Level Up 🕹️</button>
+        </div>
+    </div>
+
+    <div id="scene-6" class="scene">
+        <p class="pixel-text">ALLES UNTER KONTROLLE, ZENTRALIST?</p>
+        <canvas id="mario-canvas" width="400" height="300"></canvas>
+        <p class="pixel-text" style="margin-top:10px;">Navigiere zum Ziel!</p>
+    </div>
+
+    <div id="scene-7" class="scene">
+        <div id="final-zoom" class="zoom-box">BALD WEEKEND! 🎉</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        particlesJS("particles-js", { "particles": { "number": { "value": 50 }, "color": { "value": "#ffffff" }, "shape": { "type": "circle" }, "opacity": { "value": 0.3 }, "size": { "value": 3 }, "move": { "enable": true, "speed": 1 } } });
+
+        function switchScene(oldId, newId, callback) {
+            const oldS = document.getElementById(oldId);
+            const newS = document.getElementById(newId);
+            oldS.classList.remove('active-scene');
+            setTimeout(() => {
+                oldS.style.display = 'none';
+                newS.style.display = 'flex';
+                setTimeout(() => { newS.classList.add('active-scene'); if(callback) callback(); }, 50);
+            }, 800);
+        }
+
+        function startJourney() {
+            switchScene('scene-1', 'scene-2', () => {
+                const t = document.getElementById('train-emoji');
+                setTimeout(() => {
+                    t.classList.add('train-zoom');
+                    setTimeout(() => switchScene('scene-2', 'scene-3', startTimer), 2500);
+                }, 500);
+            });
+        }
+
+        function startTimer() {
+            let c = 10;
+            const d = document.getElementById('countdown');
+            const t = setInterval(() => {
+                c--; d.innerText = c;
+                if(c <= 0) { clearInterval(t); doRotation(); }
+            }, 1000);
+        }
+
+        function doRotation() {
+            document.body.classList.add('rotate-180');
+            setTimeout(() => {
+                document.body.style.background = "black";
+                switchScene('scene-3', 'scene-4', () => {
+                    document.body.classList.remove('rotate-180');
+                    startMatrix();
+                });
+            }, 1500);
+        }
+
+        function startMatrix() {
+            const cvs = document.getElementById('matrix-canvas');
+            const ctx = cvs.getContext('2d');
+            cvs.style.display = "block"; cvs.width = window.innerWidth; cvs.height = window.innerHeight;
+            const drops = Array(Math.floor(cvs.width/16)).fill(1);
+            const m = setInterval(() => {
+                ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,cvs.width, cvs.height);
+                ctx.fillStyle = "#0F0";
+                drops.forEach((y, i) => {
+                    ctx.fillText("01"[Math.floor(Math.random()*2)], i*16, y*16);
+                    if(y*16 > cvs.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                });
+            }, 33);
+            setTimeout(() => document.getElementById('motivation-text').style.opacity = 1, 1500);
+            setTimeout(() => { clearInterval(m); cvs.style.display="none"; switchScene('scene-4', 'scene-5'); }, 5000);
+        }
+
+        const mCvs = document.getElementById('mario-canvas');
+        const mCtx = mCvs.getContext('2d');
+        let p = { x: 30, y: 240, s: 20 }, g = { x: 320, y: 40, s: 45 }, active = false;
+
+        function goToMario() { switchScene('scene-5', 'scene-6', () => { active = true; loop(); }); }
+        function loop() {
+            if(!active) return;
+            mCtx.fillStyle = "#5c94fc"; mCtx.fillRect(0,0,400,300);
+            mCtx.fillStyle = "#ffcc00"; mCtx.fillRect(g.x, g.y, g.s, g.s);
+            mCtx.fillStyle = "#ff0000"; mCtx.fillRect(p.x, p.y, p.s, p.s);
+            if(p.x < g.x+g.s && p.x+p.s > g.x && p.y < g.y+g.s && p.y+p.s > g.y) { active = false; win(); }
+            else requestAnimationFrame(loop);
+        }
+        window.addEventListener('keydown', (e) => {
+            if(!active) return;
+            if(e.key === "ArrowUp") p.y -= 10; if(e.key === "ArrowDown") p.y += 10;
+            if(e.key === "ArrowLeft") p.x -= 10; if(e.key === "ArrowRight") p.x += 10;
+        });
+
+        function win() {
+            switchScene('scene-6', 'scene-7', () => {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                setTimeout(() => { 
+                    document.getElementById('final-zoom').classList.add('zoom-active');
+                    setTimeout(() => confetti({ particleCount: 200, spread: 100 }), 2000);
+                }, 300);
+            });
+        }
+    </script>
+</body>
+</html>
